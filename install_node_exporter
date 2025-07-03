@@ -1,0 +1,18 @@
+#!/bin/bash
+sudo wget https://github.com/prometheus/node_exporter/releases/download/v1.9.1/node_exporter-1.9.1.linux-amd64.tar.gz
+sudo tar xvf node_exporter-1.9.1.linux-amd64.tar.gz
+sudo useradd --no-create-home --shell /usr/sbin/nologin node_exporter
+sudo chown -R node_exporter:node_exporter /opt/node_exporter-1.9.1.linux-amd64/node_exporter
+sudo tee /etc/systemd/system/node_exporter.service > /dev/null <<EOF
+[Unit]
+Description=Prometheus Node Exporter
+After=network.target
+[Service]
+User=node_exporter
+ExecStart=/opt/node_exporter-1.9.1.linux-amd64/node_exporter
+Restart=always
+[Install]
+WantedBy=default.target
+EOF
+sudo systemctl daemon-reload
+sudo systemctl enable --now node_exporter
